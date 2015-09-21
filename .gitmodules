@@ -1,0 +1,39 @@
+[submodule "models/ahb-gpio"]
+	path = models/ahb-gpio
+	url = http://git.greensocs.com/models/ahb-gpio.git
+[submodule "models/apb-dual-timer"]
+	path = models/apb-dual-timer
+	url = http://git.greensocs.com/models/apb-dual-timer.git
+[submodule "models/apb-timer"]
+	path = models/apb-timer
+	url = http://git.greensocs.com/models/apb-timer.git
+[submodule "models/apb-watchdog"]
+	path = models/apb-watchdog
+	url = http://git.greensocs.com/models/apb-watchdog.git
+[submodule "models/apb_uart"]
+	path = models/apb_uart
+	url = http://git.greensocs.com/models/apb_uart.git
+[submodule "models/cpu"]
+	path = models/cpu
+	url = http://git.greensocs.com/models/simple_cpu.git
+[submodule "models/memory"]
+	path = models/memory
+	url = http://git.greensocs.com/models/simple_memory.git
+[submodule "models/pl022"]
+	path = models/pl022
+	url = http://git.greensocs.com/models/pl022.git
+[submodule "backends/tcp-serial"]
+	path = backends/tcp-serial
+	url = http://git.greensocs.com/models/tcp_serial.git
+[submodule "libs/greenlib"]
+	path = libs/greenlib
+	url = http://git.greensocs.com/greenlib/greenlib.git
+[submodule "libs/qbox"]
+	path = libs/qbox
+	url = http://git.greensocs.com/qemu/qbox.git
+[submodule "libs/tlm2c"]
+	path = libs/tlm2c
+	url = http://git.greensocs.com/tlm/tlm2c.git
+[submodule "images"]
+	path = images
+	url = http://git.greensocs.com/platforms-images/cortex-m3.git
