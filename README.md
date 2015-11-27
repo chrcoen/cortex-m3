@@ -160,12 +160,12 @@ $ cmake -DCMAKE_INSTALL_PREFIX=build -DSYSTEMC_PREFIX=/usr/local/lib/systemc-2.3
 #### Windows
 
 ```sh
-cmake -DCMAKE_INSTALL_PREFIX=build
+cmake -DCMAKE_INSTALL_PREFIX=build \
 -DSYSTEMC_PREFIX=/c/Projects/systemc-2.3.1 \
--DLUA_LIBRARIES=/c/Projects/lua-5.2.4/src/liblua.a
+-DLUA_LIBRARIES=/c/Projects/lua-5.2.4/src/liblua.a \
 -DLUA_INCLUDE_DIR=/c/Projects/lua-5.2.4/src/ \
 -DBOOST_ROOT=/c/Projects/boost-1-57-0/ \
--DSWIG_DIR=/c/Projects/swigwin-3.0.5
+-DSWIG_DIR=/c/Projects/swigwin-3.0.5 \
 -DSWIG_EXECUTABLE=/c/Projects/swigwin-3.0.5/swig.exe \
 -G"Unix Makefiles"
 ```
