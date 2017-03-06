@@ -177,6 +177,10 @@ add_subdirectory(models/apb-watchdog models/apb-watchdog.build)
 include_directories(models/apb-watchdog/include)
 link_directories(${CMAKE_SOURCE_DIR}/models/apb-watchdog.build)
 
+add_subdirectory(models/systemtest models/systemtest.build)
+include_directories(models/systemtest/include)
+link_directories(${CMAKE_SOURCE_DIR}/models/systemtest.build)
+
 ### QBOX ###
 if(MINGW)
     set(QBOX_CONFIGURE_COMMAND ${CMAKE_SOURCE_DIR}/libs/qbox/configure --target-list=arm-softmmu --library --qbox --with-tlm2c=${CMAKE_SOURCE_DIR}/libs/tlm2c.build --prefix=${CMAKE_SOURCE_DIR}/libs/qbox.build/install --disable-pie --extra-cflags=-ftls-model=initial-exec\ -static-libgcc\ -static-libstdc++)
@@ -216,8 +220,12 @@ set(TOPLEVEL_LINK_LIBRARIES ${SystemC_LIBRARIES}
                             apbwatchdog
                             devnull
                             tcpserial
+                            systemtest
 )
-
+enable_testing()
+add_test(write_reg_test_success toplevel --conf conf/cortex-m3-write_reg_test_success.lua LABELS regression)
+SET_TESTS_PROPERTIES(write_reg_test_success PROPERTIES LABELS regression )
+ 
 if(MINGW)
     list(APPEND TOPLEVEL_LINK_LIBRARIES mman)
 endif(MINGW)
