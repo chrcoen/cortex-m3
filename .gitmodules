@@ -22,6 +22,9 @@
 [submodule "models/pl022"]
 	path = models/pl022
 	url = http://git.greensocs.com/models/pl022.git
+[submodule "models/systemtest"]
+    path = models/systemtest
+    url = http://git.greensocs.com/models/systemtest
 [submodule "backends/tcp-serial"]
 	path = backends/tcp-serial
 	url = http://git.greensocs.com/models/tcp_serial.git

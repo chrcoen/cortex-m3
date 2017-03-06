@@ -60,6 +60,7 @@
 #include "DevNull/DevNull.h"
 #include "AHBGPIO/AHBGPIO.h"
 #include "APBWatchdog/APBWatchdog.h"
+#include "systemtest/systemtest.h"
 
 #include "greenrouter/genericRouter.h"
 #include "greenrouter/protocol/SimpleBus/simpleBusProtocol.h"
@@ -149,6 +150,7 @@ int sc_main(int argc, char **argv)
     DevNull *devNull = new DevNull("devnull0");
     AHBGPIO *gpio = new AHBGPIO("gpio");
     APBWatchdog *watchdog = new APBWatchdog("watchdog");
+    systemtest::systemtest * systest = new systemtest::systemtest("systemtest");
 
     /*
      * Serial TCP backends.
@@ -203,6 +205,7 @@ int sc_main(int argc, char **argv)
     router->init_socket(watchdog->targetPort);
     watchdog->WDOGINTSocket(cpu->irq_socket);
     watchdog->WDOGRESSocket(devNull->OUTSocket);
+    router->init_socket(systest->target_port);
 
     std::cout << "Sleep 7 second so you can connect to TCP.." << std::endl;
     sleep(7);

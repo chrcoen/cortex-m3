@@ -77,7 +77,7 @@ watchdog = {
 
 CPU = {
     library = "libqbox-cortex-m3.so",
-    kernel = "images/testbench.elf",
+    kernel = "images/write_reg_test_success/bin/write_reg_test_success.elf",
     quantum = 10000,
     gdb_port = 1234,
     extra_parameters = ""
