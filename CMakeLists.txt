@@ -223,8 +223,10 @@ set(TOPLEVEL_LINK_LIBRARIES ${SystemC_LIBRARIES}
                             systemtest
 )
 enable_testing()
-add_test(write_reg_test_success toplevel --conf conf/cortex-m3-write_reg_test_success.lua LABELS regression)
+add_test(write_reg_test_success toplevel --conf conf/cortex-m3-write_reg_test_success.lua)
 SET_TESTS_PROPERTIES(write_reg_test_success PROPERTIES LABELS regression )
+add_test(write_reg_test_fail toplevel --conf conf/cortex-m3-write_reg_test_fail.lua)
+SET_TESTS_PROPERTIES(write_reg_test_fail PROPERTIES LABELS fail_regression )
  
 if(MINGW)
     list(APPEND TOPLEVEL_LINK_LIBRARIES mman)
