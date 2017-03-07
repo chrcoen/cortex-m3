@@ -212,6 +212,6 @@ int sc_main(int argc, char **argv)
 
     sc_core::sc_start();
 
-    return 0;
+    return systest->get_sim_status();
 }
 
