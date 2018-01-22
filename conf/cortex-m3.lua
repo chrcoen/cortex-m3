@@ -77,10 +77,10 @@ watchdog = {
 
 CPU = {
     library = "libqbox-cortex-m3.so",
-    kernel = "images/testbench.elf",
+    kernel = "images/testbench/testbench.elf",
     quantum = 10000,
     gdb_port = 1234,
-    extra_parameters = ""
+    extra_arguments = "" -- "-singlestep -D qemu-m3.log -d in_asm,exec,nochain,int,cpu,guest_errors"
 }
 
 tcp_serial0 = {

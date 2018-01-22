@@ -100,6 +100,7 @@ include_directories(libs/greenlib/greencontrol/include
                     libs/greenlib/greensignalsocket/include
                     libs/greenlib/gsgpsocket/include
                     libs/greenlib/greenreg/include
+                    libs/greenlib/greenthreads/include
                     libs/greenlib/include
 )
 link_directories(${CMAKE_SOURCE_DIR}/libs/greenlib/greenreg/lib
@@ -221,6 +222,7 @@ set(TOPLEVEL_LINK_LIBRARIES ${SystemC_LIBRARIES}
                             devnull
                             tcpserial
                             systemtest
+			    greenthreads
 )
 enable_testing()
 add_test(write_reg_test_success toplevel --conf conf/cortex-m3-write_reg_test_success.lua)

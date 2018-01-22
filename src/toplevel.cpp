@@ -49,7 +49,7 @@
     #include <unistd.h>
 #endif
 
-#include "SimpleCPU/simpleCPU.h"
+#include "SimpleCPU/arm/armCortexM3CPU.h"
 #include "SimpleMemory/simpleMemory.h"
 
 #include "APB_UART/apb_uart.h"
@@ -66,6 +66,7 @@
 #include "greenrouter/protocol/SimpleBus/simpleBusProtocol.h"
 #include "greenrouter/scheduler/fixedPriorityScheduler.h"
 #include "greencontrol/config_api_lua_file_parser.h"
+#include "greenthreads/inlinesync.h"
 
 static void showUsage(std::string name)
 {
@@ -129,7 +130,7 @@ int sc_main(int argc, char **argv)
     /*
      * CPU.
      */
-    SimpleCPU *cpu = new SimpleCPU("CPU");
+    ArmCortexM3CPU<32> *cpu = new ArmCortexM3CPU<32>("CPU");
 
     /*
      * Memories.
@@ -175,7 +176,9 @@ int sc_main(int argc, char **argv)
     /*
      * Bind the CPU.
      */
-    cpu->master_socket(router->target_socket);
+    gs::gt::inLineSync<32> *insync = new gs::gt::inLineSync<32>("insync");
+    cpu->master_socket(insync->target_socket);
+    insync->init_socket(router->target_socket);
 
     /*
      * Bind the memories.
@@ -207,7 +210,9 @@ int sc_main(int argc, char **argv)
     watchdog->WDOGRESSocket(devNull->OUTSocket);
     router->init_socket(systest->target_port);
 
-    std::cout << "Sleep 7 second so you can connect to TCP.." << std::endl;
+    gs::cnf::cnf_api *Api = gs::cnf::GCnf_Api::getApiInstance(NULL);
+    std::cout << "Sleep 5 seconds so you can connect on TCP port "
+        << Api->getValue("tcp_serial0.tcp_port") << " ..." << std::endl;
     sleep(7);
 
     sc_core::sc_start();
