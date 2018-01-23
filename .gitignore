@@ -153,6 +153,7 @@ local.properties
 ### Output ###
 build
 toplevel
+toplevel.exe
 *.so
 *.dll
 *.build

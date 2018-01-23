@@ -49,7 +49,6 @@ include_directories(include)
 
 set(CMAKE_CXX_FLAGS "-ggdb -DSC_INCLUDE_DYNAMIC_PROCESSES -Wall -Werror")
 if(MINGW)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static-libgcc -static-libstdc++")
 endif(MINGW)
 set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
