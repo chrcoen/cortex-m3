@@ -40,15 +40,6 @@
  *
  */
 
-
-#if (defined(_WIN32) || defined(_WIN64))
-    #include <windows.h>
-    #define sleep(time) Sleep(time * 1000)
-    #define usleep(time) Sleep(time / 1000)
-#else
-    #include <unistd.h>
-#endif
-
 #include "SimpleCPU/arm/armCortexM3CPU.h"
 #include "SimpleMemory/simpleMemory.h"
 
@@ -67,6 +58,14 @@
 #include "greenrouter/scheduler/fixedPriorityScheduler.h"
 #include "greencontrol/config_api_lua_file_parser.h"
 #include "greenthreads/inlinesync.h"
+
+#if (defined(_WIN32) || defined(_WIN64))
+    #include <windows.h>
+    #define sleep(time) Sleep(time * 1000)
+    #define usleep(time) Sleep(time / 1000)
+#else
+    #include <unistd.h>
+#endif
 
 static void showUsage(std::string name)
 {
