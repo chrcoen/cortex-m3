@@ -134,8 +134,8 @@ int sc_main(int argc, char **argv)
     /*
      * Memories.
      */
-    Memory *rom = new Memory("rom");
-    Memory *ram = new Memory("ram");
+    Memory<32> *rom = new Memory<32>("rom");
+    Memory<32> *ram = new Memory<32>("ram");
 
     /*
      * Peripherals.
