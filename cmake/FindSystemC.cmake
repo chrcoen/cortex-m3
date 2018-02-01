@@ -19,34 +19,13 @@
 #  find_package(SystemC)
 
 #=============================================================================
-# Copyright 2015 GreenSocs
+# Copyright 2018 GreenSocs
 #=============================================================================
 
-function(SYSTEMC_APPEND_TARGET var prefix)
-    set(listVar "")
-    foreach(f ${ARGN})
-        list(APPEND listVar "${prefix}${f}")
-    endforeach(f)
-    set(${var} "${listVar}" PARENT_SCOPE)
-endfunction(SYSTEMC_APPEND_TARGET)
-
-set(_SYSTEMC_TARGET_SUFFIXES linux
-                             linux64
-                             bsd
-                             bsd64
-                             macosx
-                             macosx64
-                             macosxppc
-                             macosxppc64
-                             mingw
-                             mingw64
-                             gccsparcOS5
-                             sparcOS5)
-
-SYSTEMC_APPEND_TARGET(_SYSTEMC_PREFIX_SUFFIXES ${SYSTEMC_PREFIX}/lib- ${_SYSTEMC_TARGET_SUFFIXES})
-SYSTEMC_APPEND_TARGET(_SYSTEMC_HOME_SUFFIXES $ENV{SYSTEMC_HOME}/lib- ${_SYSTEMC_TARGET_SUFFIXES})
-SYSTEMC_APPEND_TARGET(_USR_SUFFIXES /usr/lib- ${_SYSTEMC_TARGET_SUFFIXES})
-SYSTEMC_APPEND_TARGET(_USR_LOCAL_SUFFIXES /usr/local/lib- ${_SYSTEMC_TARGET_SUFFIXES})
+file(GLOB _SYSTEMC_PREFIX_SUFFIXES ${SYSTEMC_PREFIX}/lib-*)
+file(GLOB _SYSTEMC_HOME_SUFFIXES $ENV{SYSTEMC_HOME}/lib-*)
+file(GLOB _USR_SUFFIXES /usr/lib-*)
+file(GLOB _USR_LOCAL_SUFFIXES /usr/local/lib-*)
 
 set(_SYSTEMC_HINTS
     ${SYSTEMC_PREFIX}/include
