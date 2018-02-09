@@ -212,7 +212,7 @@ int sc_main(int argc, char **argv)
     gs::cnf::cnf_api *Api = gs::cnf::GCnf_Api::getApiInstance(NULL);
     std::cout << "Sleep 5 seconds so you can connect on TCP port "
         << Api->getValue("tcp_serial0.tcp_port") << " ..." << std::endl;
-    sleep(7);
+    sleep(5);
 
     sc_core::sc_start();
 
