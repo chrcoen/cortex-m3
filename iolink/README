@@ -1,0 +1,16 @@
+
+
+git submodule update --init
+cd libs/qbox
+git submodule update --init dtc
+cd ../..
+
+git apply submodules.patch
+
+cmake .
+make
+cp libs/qbox.build/arm-softmmu/libqbox-cortex-m3.so libs/qbox.build/arm-softmmu/libqbox-cortex-m3-2.so
+
+./toplevel --conf conf/iol.lua
+
+
