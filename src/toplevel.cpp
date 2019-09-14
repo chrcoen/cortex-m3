@@ -40,6 +40,8 @@
  *
  */
 
+#include <string>
+
 #include "SimpleCPU/arm/armCortexM3CPU.h"
 #include "SimpleMemory/simpleMemory.h"
 
@@ -52,7 +54,7 @@
 #include "AHBGPIO/AHBGPIO.h"
 #include "APBWatchdog/APBWatchdog.h"
 #include "systemtest/systemtest.h"
-
+#include "CCE4510/cce4510.h"
 #include "greenrouter/genericRouter.h"
 #include "greenrouter/protocol/SimpleBus/simpleBusProtocol.h"
 #include "greenrouter/scheduler/fixedPriorityScheduler.h"
@@ -67,9 +69,11 @@
     #include <unistd.h>
 #endif
 
+
 static void showUsage(std::string name)
 {
-    std::cerr << "Usage: " << name << " <option(s)>\n"
+    std::cerr << "Usage: " << name << " <time> <option(s)>\n"
+              << "Time: Simulation time in ms, 0 means forever\n"
               << "Options:\n"
               << "\t-h,--help\t\t\tShow this help message\n"
               << "\t-c,--conf CONFIGURATION_FILE\t"
@@ -108,114 +112,136 @@ std::string parseArgs(int argc, char **argv)
     return configurationFilePath;
 }
 
+struct IolModule
+{
+  ArmCortexM3CPU<32> *cpu;
+  Memory<32> *rom;
+  Memory<32> *ram;
+  APBTimer *timer;
+  CCE4510 *cce4510;
+  gs::gp::SimpleBusProtocol<32> *protocol;
+  gs::gp::fixedPriorityScheduler *scheduler;
+  gs::gp::GenericRouter<32> *router;
+  gs::gt::inLineSync<32> *insync;
+  IolModule(const std::string &suffix)
+  {
+    cpu = new ArmCortexM3CPU<32>((std::string("CPU") + suffix).c_str());
+    rom = new Memory<32>((std::string("rom") + suffix).c_str());
+    ram = new Memory<32>((std::string("ram") + suffix).c_str());
+    timer = new APBTimer((std::string("timer") + suffix).c_str());
+    cce4510 = new CCE4510((std::string("cce4510") + suffix).c_str());
+    protocol = new gs::gp::SimpleBusProtocol<32>((std::string("protocol") + suffix).c_str(), 10);
+    scheduler = new gs::gp::fixedPriorityScheduler((std::string("scheduler") + suffix).c_str());
+    router = new gs::gp::GenericRouter<32>((std::string("router") + suffix).c_str());
+    insync = new gs::gt::inLineSync<32>((std::string("insync") + suffix).c_str());
+  }
+  void bind() {
+     protocol->router_port(*router);
+     protocol->scheduler_port(*scheduler);
+     router->protocol_port(*protocol);
+
+     cpu->master_socket(insync->target_socket);
+     insync->init_socket(router->target_socket);
+     timer->TIMERINTSocket(cpu->irq_socket);
+
+     router->init_socket(rom->target_port);
+     router->init_socket(ram->target_port);
+     router->init_socket(timer->targetPort);
+     router->init_socket(cce4510->target_port);
+  }
+  ~IolModule()
+  {
+    delete cpu;
+    delete rom;
+    delete ram;
+    delete timer;
+    delete cce4510;
+    delete protocol;
+    delete scheduler;
+    delete router;
+    delete insync;
+  }
+};
+
+
 int sc_main(int argc, char **argv)
 {
-    /* GSPARAMS */
-    std::string configurationFilePath = parseArgs(argc, argv);
-    gs::cnf::LuaFile_Tool luareader("luareader");
-    bool openResult;
+  if (argc < 2) {
+    showUsage(argv[0]);
+    exit(EXIT_FAILURE);
+  }
 
-    if(configurationFilePath.empty()) {
-        openResult = luareader.config("config.lua");
-    } else {
-        openResult = luareader.config(configurationFilePath.c_str());
-    }
+  /* GSPARAMS */
+  std::string configurationFilePath = parseArgs(argc, argv);
+  gs::cnf::LuaFile_Tool luareader("luareader");
+  bool openResult;
 
-    if(openResult != 0) {
-        showUsage(argv[0]);
-        exit(EXIT_FAILURE);
-    }
+  if(configurationFilePath.empty()) {
+      openResult = luareader.config("config.lua");
+  } else {
+      openResult = luareader.config(configurationFilePath.c_str());
+  }
 
-    /*
-     * CPU.
-     */
-    ArmCortexM3CPU<32> *cpu = new ArmCortexM3CPU<32>("CPU");
+  if(openResult != 0) {
+      showUsage(argv[0]);
+      exit(EXIT_FAILURE);
+  }
 
-    /*
-     * Memories.
-     */
-    Memory<32> *rom = new Memory<32>("rom");
-    Memory<32> *ram = new Memory<32>("ram");
+  IolModule master("_master");
+  IolModule slave("_slave");
 
-    /*
-     * Peripherals.
-     */
-    APB_UART *uart;
-    uart = new APB_UART("uart0");
-    PL022 *spi = new PL022("spi");
-    APBTimer *timer[2];
-    timer[0] = new APBTimer("timer0");
-    timer[1] = new APBTimer("timer1");
-    APBDualTimer *dualTimer = new APBDualTimer("dualtimer");
-    DevNull *devNull = new DevNull("devnull0");
-    AHBGPIO *gpio = new AHBGPIO("gpio");
-    APBWatchdog *watchdog = new APBWatchdog("watchdog");
-    systemtest::systemtest * systest = new systemtest::systemtest("systemtest");
+  master.bind();
+  slave.bind();
 
-    /*
-     * Serial TCP backends.
-     */
-    TCPSerial *tcp;
-    tcp = new TCPSerial("tcp_serial0");
+  master.cce4510->serial_sock_iolink(slave.cce4510->serial_sock_iolink);
 
-    /*
-     * Memory router.
-     */
-    gs::gp::SimpleBusProtocol<32> *protocol =
-                            new gs::gp::SimpleBusProtocol<32>("protocol", 10);
-    gs::gp::fixedPriorityScheduler *scheduler =
-                            new gs::gp::fixedPriorityScheduler("scheduler");
-    gs::gp::GenericRouter<32> *router =
-                            new gs::gp::GenericRouter<32>("router");
+  sc_core::sc_start();
 
-    protocol->router_port(*router);
-    protocol->scheduler_port(*scheduler);
-    router->protocol_port(*protocol);
-
-    /*
-     * Bind the CPU.
-     */
-    gs::gt::inLineSync<32> *insync = new gs::gt::inLineSync<32>("insync");
-    cpu->master_socket(insync->target_socket);
-    insync->init_socket(router->target_socket);
-
-    /*
-     * Bind the memories.
-     */
-    router->init_socket(rom->target_port);
-    router->init_socket(ram->target_port);
-
-    /*
-     * Bind the peripherals.
-     */
-    uart->serial_sock(tcp->serial_sock);
-    router->init_socket(uart->target_port);
-    uart->irq_socket(cpu->irq_socket);
-    router->init_socket(spi->target_port);
-    spi->irq_socket(cpu->irq_socket);
-    for (int i = 0; i < 2; i++)
-    {
-        router->init_socket(timer[i]->targetPort);
-        timer[i]->TIMERINTSocket(cpu->irq_socket);
-    }
-    router->init_socket(dualTimer->targetPort);
-    dualTimer->IRQTIMINT1Socket(cpu->irq_socket);
-    dualTimer->IRQTIMINTCSocket(devNull->IRQSocket);
-    dualTimer->IRQTIMINT2Socket(cpu->irq_socket);
-    router->init_socket(gpio->target_port);
-    gpio->irq_socket(cpu->irq_socket);
-    router->init_socket(watchdog->targetPort);
-    watchdog->WDOGINTSocket(cpu->irq_socket);
-    watchdog->WDOGRESSocket(devNull->OUTSocket);
-    router->init_socket(systest->target_port);
-
-    gs::cnf::cnf_api *Api = gs::cnf::GCnf_Api::getApiInstance(NULL);
-    std::cout << "Sleep 5 seconds so you can connect on TCP port "
-        << Api->getValue("tcp_serial0.tcp_port") << " ..." << std::endl;
-    sleep(5);
-
-    sc_core::sc_start();
-
-    return systest->get_sim_status();
+  return 0;
 }
+
+
+
+
+struct SimpleModule
+{
+  ArmCortexM3CPU<32> *cpu;
+  Memory<32> *rom;
+  Memory<32> *ram;
+  gs::gp::SimpleBusProtocol<32> *protocol;
+  gs::gp::fixedPriorityScheduler *scheduler;
+  gs::gp::GenericRouter<32> *router;
+  gs::gt::inLineSync<32> *insync;
+  SimpleModule(const std::string &suffix)
+  {
+    cpu = new ArmCortexM3CPU<32>((std::string("CPU") + suffix).c_str());
+    rom = new Memory<32>((std::string("rom") + suffix).c_str());
+    ram = new Memory<32>((std::string("ram") + suffix).c_str());
+    protocol = new gs::gp::SimpleBusProtocol<32>((std::string("protocol") + suffix).c_str(), 10);
+    scheduler = new gs::gp::fixedPriorityScheduler((std::string("scheduler") + suffix).c_str());
+    router = new gs::gp::GenericRouter<32>((std::string("router") + suffix).c_str());
+    insync = new gs::gt::inLineSync<32>((std::string("insync") + suffix).c_str());
+  }
+  void bind() {
+     protocol->router_port(*router);
+     protocol->scheduler_port(*scheduler);
+     router->protocol_port(*protocol);
+
+     cpu->master_socket(insync->target_socket);
+     insync->init_socket(router->target_socket);
+
+     router->init_socket(rom->target_port);
+     router->init_socket(ram->target_port);
+  }
+  ~SimpleModule()
+  {
+    delete cpu;
+    delete rom;
+    delete ram;
+    delete protocol;
+    delete scheduler;
+    delete router;
+    delete insync;
+  }
+};
 

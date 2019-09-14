@@ -1,0 +1,50 @@
+
+CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
+PROJECT(CCE4510)
+
+LIST(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+
+FIND_PACKAGE(SystemC)
+if(SystemC_FOUND)
+    INCLUDE_DIRECTORIES(${SystemC_INCLUDE_DIRS})
+else()
+    MESSAGE(FATAL_ERROR "SystemC library not found.")
+endif()
+
+FIND_PACKAGE(TLM)
+if(TLM_FOUND)
+    INCLUDE_DIRECTORIES(${TLM_INCLUDE_DIRS})
+else()
+    MESSAGE( FATAL_ERROR "TLM library not found." )
+endif()
+
+FIND_PACKAGE(GREENLIB)
+if(GREENLIB_FOUND)
+    INCLUDE_DIRECTORIES(${GREENLIB_INCLUDE_DIRS})
+    LINK_DIRECTORIES(${GREENLIB_LIBRARY_DIRS})
+else()
+    MESSAGE(FATAL_ERROR "GreenLib not found.")
+endif()
+
+set (INCLUDE_DIRS ${INCLUDE_DIRS} include)
+
+INCLUDE_DIRECTORIES(${INCLUDE_DIRS})
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DSC_INCLUDE_DYNAMIC_PROCESSES")
+
+if(MINGW)
+    add_library(cce4510 STATIC src/cce4510.cpp)
+else()
+    add_library(cce4510 SHARED src/cce4510.cpp)
+endif()
+
+TARGET_LINK_LIBRARIES(cce4510 ${GREENLIB_LIBRARIES})
+
+# Installation paths
+INSTALL(DIRECTORY include/CCE4510
+        DESTINATION include
+)
+
+# Not sure it's the right destination? Maybe we want lib64 in case of 64bits?
+INSTALL(TARGETS cce4510 DESTINATION lib)
+

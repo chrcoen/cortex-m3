@@ -153,6 +153,10 @@ add_subdirectory(models/apb_uart models/apb_uart.build)
 include_directories(models/apb_uart/include)
 link_directories(${CMAKE_SOURCE_DIR}/models/apb_uart.build)
 
+add_subdirectory(models/cce4510 models/cce4510.build)
+include_directories(models/cce4510/include)
+link_directories(${CMAKE_SOURCE_DIR}/models/cce4510.build)
+
 add_subdirectory(models/pl022 models/pl022.build)
 include_directories(models/pl022/include)
 link_directories(${CMAKE_SOURCE_DIR}/models/pl022.build)
@@ -206,6 +210,7 @@ install(FILES ${CMAKE_SOURCE_DIR}/libs/qbox.build/arm-softmmu/libqbox-cortex-m3$
 add_executable(toplevel src/toplevel.cpp)
 add_dependencies(toplevel
                  simplecpu
+                 cce4510
                  apb_uart
                  qbox)
 
@@ -213,6 +218,7 @@ set(TOPLEVEL_LINK_LIBRARIES ${SystemC_LIBRARIES}
                             ${LUA_LIBRARIES}
                             simplecpu
                             apb_uart
+                            cce4510
                             pl022
                             apbtimer
                             apbdualtimer

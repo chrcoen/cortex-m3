@@ -1,0 +1,31 @@
+# HG changeset patch
+# User Christoph <imbizbud@gmail.com>
+# Date 1561751403 -7200
+#      Fri Jun 28 21:50:03 2019 +0200
+# Node ID 232b19576aec0456d349d87e8366ad08bc907be4
+# Parent  c44441e0f50108f72b27b520b657d4431be5fbe2
+patch
+
+diff -r c44441e0f501 -r 232b19576aec libs/qbox/hw/timer/armv7m_systick.c
+--- a/libs/qbox/hw/timer/armv7m_systick.c	Sun Jan 27 18:58:12 2019 +0100
++++ b/libs/qbox/hw/timer/armv7m_systick.c	Fri Jun 28 21:50:03 2019 +0200
+@@ -25,7 +25,7 @@
+ #define SYSTICK_CLKSOURCE (1 << 2)
+ #define SYSTICK_COUNTFLAG (1 << 16)
+ 
+-int system_clock_scale;
++int system_clock_scale = 10;
+ 
+ /* Conversion factor from qemu timer to SysTick frequencies.  */
+ static inline int64_t systick_scale(SysTickState *s)
+diff -r c44441e0f501 -r 232b19576aec models/cpu/include/SimpleCPU/simpleCPU.hpp
+--- a/models/cpu/include/SimpleCPU/simpleCPU.hpp	Sun Jan 27 18:58:12 2019 +0100
++++ b/models/cpu/include/SimpleCPU/simpleCPU.hpp	Fri Jun 28 21:50:03 2019 +0200
+@@ -174,6 +174,7 @@
+ 	trans->set_data_length(size);
+ 	trans->set_streaming_width(size);
+ 	trans->set_byte_enable_ptr(0);
++	trans->set_response_status(tlm::TLM_OK_RESPONSE);
+ 
+ 	switch (cmd) {
+ 		case TLM2C_READ:
