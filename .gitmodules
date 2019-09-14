@@ -1,42 +1,42 @@
 [submodule "models/ahb-gpio"]
 	path = models/ahb-gpio
-	url = ../../models/ahb-gpio.git
+	url = https://git.greensocs.com/models/ahb-gpio.git
 [submodule "models/apb-dual-timer"]
 	path = models/apb-dual-timer
-	url = ../../models/apb-dual-timer.git
+	url = https://git.greensocs.com/models/apb-dual-timer.git
 [submodule "models/apb-timer"]
 	path = models/apb-timer
-	url = ../../models/apb-timer.git
+	url = https://git.greensocs.com/models/apb-timer.git
 [submodule "models/apb-watchdog"]
 	path = models/apb-watchdog
-	url = ../../models/apb-watchdog.git
+	url = https://git.greensocs.com/models/apb-watchdog.git
 [submodule "models/apb_uart"]
 	path = models/apb_uart
-	url = ../../models/apb_uart.git
+	url = https://git.greensocs.com/models/apb_uart.git
 [submodule "models/cpu"]
 	path = models/cpu
-	url = ../../models/simple_cpu.git
+	url = https://git.greensocs.com/models/simple_cpu.git
 [submodule "models/memory"]
 	path = models/memory
-	url = ../../models/simple_memory.git
+	url = https://git.greensocs.com/models/simple_memory.git
 [submodule "models/pl022"]
 	path = models/pl022
-	url = ../../models/pl022.git
+	url = https://git.greensocs.com/models/pl022.git
 [submodule "models/systemtest"]
     path = models/systemtest
-    url = ../../models/systemtest.git
+    url = https://git.greensocs.com/models/systemtest.git
 [submodule "backends/tcp-serial"]
 	path = backends/tcp-serial
-	url = ../../models/tcp_serial.git
+	url = https://git.greensocs.com/models/tcp_serial.git
 [submodule "libs/greenlib"]
 	path = libs/greenlib
-	url = ../../greenlib/greenlib.git
+	url = https://git.greensocs.com/greenlib/greenlib.git
 [submodule "libs/qbox"]
 	path = libs/qbox
-	url = ../../qemu/qbox.git
+	url = https://git.greensocs.com/qemu/qbox.git
 [submodule "libs/tlm2c"]
 	path = libs/tlm2c
-	url = ../../tlm/tlm2c.git
+	url = https://git.greensocs.com/tlm/tlm2c.git
 [submodule "images"]
 	path = images
-	url = ../../platforms-images/cortex-m3.git
+	url = https://git.greensocs.com/platforms-images/cortex-m3.git
